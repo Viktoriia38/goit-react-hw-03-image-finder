@@ -1,63 +1,60 @@
 import './styles.css';
 // import { Audio } from 'react-loader-spinner';
-import axios from 'axios';
 import { Component } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
-import { Modal } from './Modal/Modal';
-
-/* <Audio
-  height="80"
-  width="80"
-  radius="9"
-  color="green"
-  ariaLabel="loading"
-  wrapperStyle
-  wrapperClass
-/>; */
+import { getImagesService } from 'services/image-gallery';
 
 export class App extends Component {
+  state = {
+    images: [],
+    status: 'idle',
+    perPage: 12,
+    currentPage: 1,
+    query: '',
+  };
+
+  formSubmit = name => {
+    console.log(name);
+    const { query } = this.state;
+    console.log(query);
+    // if (name === query || name === '') {
+    //   alert('Write new date for search');
+    // }
+    if (name !== query) {
+      this.setState({
+        images: [],
+        query: name,
+        perPage: 12,
+        currentPage: 1,
+      });
+      console.log(this.state);
+    }
+  };
+
+  async componentDidMount() {
+    console.log(this.state);
+    const { query, perPage, currentPage } = this.state;
+    // this.setState({ status: 'loading' });
+    console.log(query);
+    console.log(this.state);
+    try {
+      console.log(this.state);
+      const response = await getImagesService({ query, perPage, currentPage });
+      console.log(response);
+      this.setState({ images: response, status: 'fulfilled' });
+    } catch (error) {
+      this.setState({ status: 'rejected' });
+      throw new Error(error.message);
+    }
+  }
+
   render() {
     return (
       <>
-        <Searchbar />
-        <ImageGallery />
-        <Modal />
+        <Searchbar onSubmit={this.formSubmit} query={this.state.query} />
+        <ImageGallery images={this.state.images} />
       </>
     );
   }
 }
-
-// My key - 33614509-c1f88af9b42b2af62dde3bb25
-
-// https://pixabay.com/api/?q=cat&page=1&key=your_key&image_type=photo&orientation=horizontal&per_page=12
-
-// Рабочий запрос
-// https://pixabay.com/api/?q=cat&page=1&key=33614509-c1f88af9b42b2af62dde3bb25&image_type=photo&orientation=horizontal&per_page=12
-// "total": 23409,
-//     "totalHits": 500,
-//     "hits": [
-//         {
-//             "id": 736877,
-//             "pageURL": "https://pixabay.com/photos/tree-cat-silhouette-moon-full-moon-736877/",
-//             "type": "photo",
-//             "tags": "tree, cat, silhouette",
-//             "previewURL": "https://cdn.pixabay.com/photo/2015/04/23/21/59/tree-736877_150.jpg",
-//             "previewWidth": 150,
-//             "previewHeight": 100,
-//             "webformatURL": "https://pixabay.com/get/g7028f0d1acfaf5db77007e3db2192847da85f3583c1a120cfc0c9ea92a3184bf876bda980e0f84e3f30ac489cd88b4ec_640.jpg",
-//             "webformatWidth": 640,
-//             "webformatHeight": 427,
-//             "largeImageURL": "https://pixabay.com/get/g3d8436dff41f97d8c8307c4839a18846ba433121325ef039b0f7bbeb5e53ffeb4e70b6828ad3d755dc547bf7d7ab3634a56360ddb4de519a15acbb6e15257b8c_1280.jpg",
-//             "imageWidth": 1920,
-//             "imageHeight": 1282,
-//             "imageSize": 97150,
-//             "views": 1175256,
-//             "downloads": 587751,
-//             "collections": 2289,
-//             "likes": 2773,
-//             "comments": 543,
-//             "user_id": 909086,
-//             "user": "Bessi",
-//             "userImageURL": "https://cdn.pixabay.com/user/2019/04/11/22-45-05-994_250x250.jpg"
-//         }.collections]

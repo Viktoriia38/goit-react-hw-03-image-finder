@@ -1,8 +1,9 @@
-export function ImageGalleryItem() {
+import css from './ImageGalleryItem.module.css';
+
+export function ImageGalleryItem({ smallImage, tag }) {
   return (
-    <li className="gallery-item">
-      Hello
-      <img src="" alt="" />
+    <li className={css.galleryItem}>
+      <img src={smallImage} alt={tag} />
     </li>
   );
 }
