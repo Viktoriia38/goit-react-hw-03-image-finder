@@ -1,8 +1,7 @@
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
-import { Modal } from 'components/Modal/Modal';
 import css from './ImageGallery.module.css';
 
-export function ImageGallery({ images }) {
+export function ImageGallery({ images, handleClickItem }) {
   const { hits } = images;
   console.log(images);
   return (
@@ -12,13 +11,11 @@ export function ImageGallery({ images }) {
         hits.map(hit => (
           <>
             <ImageGalleryItem
-              id={hit.id}
               smallImage={hit.webformatURL}
               tag={hit.tags}
               key={hit.id}
+              handleClickItem={handleClickItem}
             />
-
-            <Modal largeImage={hit.largeImageURL} id={hit.id} tag={hit.tags} />
           </>
         ))}
     </ul>

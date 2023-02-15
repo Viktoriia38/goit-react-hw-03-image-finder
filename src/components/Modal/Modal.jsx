@@ -1,10 +1,11 @@
 import * as basicLightbox from 'basiclightbox';
-
-export function Modal({ largeImage, id, tag }) {
+// largeImage={hit.largeImageURL} id={hit.id} tag={hit.tags}
+export function Modal({ images }) {
+  const { id, largeImageURL, tags } = images;
   const instance = basicLightbox.create(`
     <div className="overlay">
       <div className="modal" key=${id}>
-        <img src=${largeImage} alt=${tag} />
+        <img src=${largeImageURL} alt=${tags} />
       </div>
     </div>
 `);

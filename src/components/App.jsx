@@ -4,6 +4,7 @@ import { Component } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { getImagesService } from 'services/image-gallery';
+import { Modal } from 'components/Modal/Modal';
 
 export class App extends Component {
   state = {
@@ -33,15 +34,15 @@ export class App extends Component {
   };
 
   async componentDidUpdate(_, prevState) {
-    console.log(this.state);
+    console.log(prevState);
     this.setState({ status: 'loading' });
 
     const { query, perPage, currentPage } = this.state;
     if (prevState.query !== query || prevState.currentPage !== currentPage) {
       console.log(query);
-      console.log(this.state);
+      console.log(prevState);
       try {
-        console.log(this.state);
+        console.log(prevState);
         const response = await getImagesService({
           query,
           perPage,
@@ -60,7 +61,11 @@ export class App extends Component {
     return (
       <>
         <Searchbar onSubmit={this.formSubmit} query={this.state.query} />
-        <ImageGallery images={this.state.images} />
+        <ImageGallery
+          images={this.state.images}
+          handleClickItem={this.handleClickItem}
+        />
+        <Modal images={this.state.images} />
       </>
     );
   }
