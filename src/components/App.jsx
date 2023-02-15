@@ -32,20 +32,27 @@ export class App extends Component {
     }
   };
 
-  async componentDidMount() {
+  async componentDidUpdate(_, prevState) {
     console.log(this.state);
+    this.setState({ status: 'loading' });
+
     const { query, perPage, currentPage } = this.state;
-    // this.setState({ status: 'loading' });
-    console.log(query);
-    console.log(this.state);
-    try {
+    if (prevState.query !== query || prevState.currentPage !== currentPage) {
+      console.log(query);
       console.log(this.state);
-      const response = await getImagesService({ query, perPage, currentPage });
-      console.log(response);
-      this.setState({ images: response, status: 'fulfilled' });
-    } catch (error) {
-      this.setState({ status: 'rejected' });
-      throw new Error(error.message);
+      try {
+        console.log(this.state);
+        const response = await getImagesService({
+          query,
+          perPage,
+          currentPage,
+        });
+        console.log(response);
+        this.setState({ images: response, status: 'fulfilled' });
+      } catch (error) {
+        this.setState({ status: 'rejected' });
+        throw new Error(error.message);
+      }
     }
   }
 
