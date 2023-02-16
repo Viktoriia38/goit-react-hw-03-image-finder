@@ -15,12 +15,13 @@ export class ImageGalleryItem extends Component {
   render() {
     const { webformatURL, tags, id } = this.props.images;
     return (
-      <li className={css.galleryItem} onClick={this.handleToggleModal}>
+      <li className={css.galleryItem}>
         <img
           src={webformatURL}
           alt={tags}
           id={id}
           className={css.galleryImage}
+          onClick={this.handleToggleModal}
         />
         {this.state.isOpenModal && (
           <Modal
@@ -34,11 +35,9 @@ export class ImageGalleryItem extends Component {
 }
 
 ImageGalleryItem.propTypes = {
-  images: propTypes.objectOf(
-    propTypes.exact({
-      tags: propTypes.string.isRequired,
-      webformatURL: propTypes.string.isRequired,
-      id: propTypes.number.isRequired,
-    })
-  ),
+  images: propTypes.shape({
+    tags: propTypes.string.isRequired,
+    webformatURL: propTypes.string.isRequired,
+    id: propTypes.number.isRequired,
+  }),
 };

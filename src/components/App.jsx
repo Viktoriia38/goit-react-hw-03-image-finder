@@ -15,6 +15,7 @@ export class App extends Component {
     query: '',
     page: 1,
     isLoading: false,
+    totalHits: 0,
   };
 
   formSubmit = name => {
@@ -33,15 +34,13 @@ export class App extends Component {
 
   handleAddImages = () => {
     this.setState(prevState => ({
-      perPage: prevState.perPage + 12,
       page: prevState.page + 1,
     }));
   };
 
   async componentDidUpdate(_, prevState) {
     const { query, perPage, page } = this.state;
-
-    if (prevState.query !== query || prevState.perPage !== perPage) {
+    if (prevState.query !== query || prevState.page !== page) {
       this.setState({ status: 'loading' });
       this.setState({ isLoading: true });
       try {
@@ -50,7 +49,11 @@ export class App extends Component {
           perPage,
           page,
         });
-        this.setState({ images: response, status: 'fulfilled' });
+        this.setState(prevState => ({
+          images: [...prevState.images, ...response.hits],
+          totalHits: response.totalHits,
+          status: 'fulfilled',
+        }));
       } catch (error) {
         this.setState({ status: 'rejected' });
         throw new Error(error.message);
@@ -61,15 +64,15 @@ export class App extends Component {
   }
 
   render() {
-    const { totalHits, hits } = this.state.images;
+    const { totalHits, images, page, query } = this.state;
     const coin = Math.floor(totalHits / this.state.perPage);
 
     return (
       <div className={css.App}>
         {this.state.isLoading && <Loader />}
-        <Searchbar onSubmit={this.formSubmit} query={this.state.query} />
-        {hits !== null && hits && <ImageGallery images={this.state.images} />}
-        {coin > 1 && <Button onClick={this.handleAddImages} />}
+        <Searchbar onSubmit={this.formSubmit} query={query} />
+        <ImageGallery images={images} />
+        {coin > 1 && coin !== page && <Button onClick={this.handleAddImages} />}
       </div>
     );
   }

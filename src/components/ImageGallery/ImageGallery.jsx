@@ -5,12 +5,14 @@ import { Component } from 'react';
 
 export class ImageGallery extends Component {
   render() {
-    const { hits } = this.props.images;
+    const { images } = this.props;
+
     return (
       <>
         <ul className={css.gallery}>
-          {hits !== undefined &&
-            hits.map(hit => <ImageGalleryItem images={hit} key={hit.id} />)}
+          {images.map(hit => (
+            <ImageGalleryItem images={hit} key={hit.id} />
+          ))}
         </ul>
       </>
     );
@@ -18,5 +20,5 @@ export class ImageGallery extends Component {
 }
 
 ImageGallery.propTypes = {
-  images: propTypes.object.isRequired,
+  images: propTypes.array.isRequired,
 };
