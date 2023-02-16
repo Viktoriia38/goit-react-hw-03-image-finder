@@ -1,72 +1,76 @@
 import './styles.css';
-// import { Audio } from 'react-loader-spinner';
+import css from './App.module.css';
 import { Component } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { getImagesService } from 'services/image-gallery';
-import { Modal } from 'components/Modal/Modal';
+import { Button } from './Button/Button';
+import { Loader } from './Loader/Loader';
 
 export class App extends Component {
   state = {
     images: [],
     status: 'idle',
     perPage: 12,
-    currentPage: 1,
     query: '',
+    page: 1,
+    isLoading: false,
   };
 
   formSubmit = name => {
-    console.log(name);
     const { query } = this.state;
-    console.log(query);
-    // if (name === query || name === '') {
-    //   alert('Write new date for search');
-    // }
+
     if (name !== query) {
       this.setState({
         images: [],
         query: name,
+        page: 1,
         perPage: 12,
-        currentPage: 1,
+        isLoading: false,
       });
-      console.log(this.state);
     }
   };
 
-  async componentDidUpdate(_, prevState) {
-    console.log(prevState);
-    this.setState({ status: 'loading' });
+  handleAddImages = () => {
+    this.setState(prevState => ({
+      perPage: prevState.perPage + 12,
+      page: prevState.page + 1,
+    }));
+  };
 
-    const { query, perPage, currentPage } = this.state;
-    if (prevState.query !== query || prevState.currentPage !== currentPage) {
-      console.log(query);
-      console.log(prevState);
+  async componentDidUpdate(_, prevState) {
+    const { query, perPage, page } = this.state;
+
+    if (prevState.query !== query || prevState.perPage !== perPage) {
+      this.setState({ status: 'loading' });
+      this.setState({ isLoading: true });
       try {
-        console.log(prevState);
         const response = await getImagesService({
           query,
           perPage,
-          currentPage,
+          page,
         });
-        console.log(response);
         this.setState({ images: response, status: 'fulfilled' });
       } catch (error) {
         this.setState({ status: 'rejected' });
         throw new Error(error.message);
+      } finally {
+        this.setState({ isLoading: false });
       }
     }
   }
 
   render() {
+    const { totalHits, hits } = this.state.images;
+    const coin = Math.floor(totalHits / this.state.perPage);
+
     return (
-      <>
+      <div className={css.App}>
+        {this.state.isLoading && <Loader />}
         <Searchbar onSubmit={this.formSubmit} query={this.state.query} />
-        <ImageGallery
-          images={this.state.images}
-          handleClickItem={this.handleClickItem}
-        />
-        <Modal images={this.state.images} />
-      </>
+        {hits !== null && hits && <ImageGallery images={this.state.images} />}
+        {coin > 1 && <Button onClick={this.handleAddImages} />}
+      </div>
     );
   }
 }

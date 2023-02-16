@@ -1,4 +1,6 @@
 import { Component } from 'react';
+import propTypes from 'prop-types';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import css from './Searchbar.module.css';
 
 export class Searchbar extends Component {
@@ -9,18 +11,15 @@ export class Searchbar extends Component {
   handleChange = e => {
     const { name, value } = e.target;
     this.setState({ [name]: value });
-    // console.log(this.state);
   };
 
   handleSubmit = e => {
-    console.log(this.props);
     e.preventDefault();
     const { name } = this.state;
     if (name === '') {
-      alert('Write text for search');
+      Notify.info('Write text for search');
     }
     this.props.onSubmit(name.trim().toLowerCase());
-    console.log(this.props);
     this.reset();
   };
 
@@ -40,10 +39,10 @@ export class Searchbar extends Component {
             onChange={this.handleChange}
             className={css.input}
             type="text"
-            autocomplete="off"
+            autoComplete="off"
             name="name"
             value={this.state.name || ''}
-            autofocus
+            autoFocus
             placeholder="Search images and photos"
           />
         </form>
@@ -51,3 +50,9 @@ export class Searchbar extends Component {
     );
   }
 }
+
+Searchbar.propTypes = {
+  state: propTypes.shape({
+    name: propTypes.string.isRequired,
+  }),
+};
